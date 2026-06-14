@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import PromoBanner from '@/components/PromoBanner'
 
 const R = { fontFamily: "'Rackety DEMO', sans-serif" } as const
 const F = { fontFamily: "'BudgePair', sans-serif" } as const
@@ -51,11 +50,6 @@ export default function CateringPage() {
               <span style={{ ...F, fontSize: '0.9rem', color: '#1A1A1A' }}>{text}</span>
             </div>
           ))}
-        </div>
-
-        {/* Promotions */}
-        <div style={{ marginBottom: 32 }}>
-          <PromoBanner />
         </div>
 
         {sent ? (
