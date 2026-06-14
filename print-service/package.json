@@ -1,0 +1,12 @@
+{
+  "name": "super-noodles-print-service",
+  "version": "1.0.0",
+  "description": "Auto print service for Super Noodles — Glenmore Park",
+  "main": "print-service.js",
+  "scripts": {
+    "start": "node print-service.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
