@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       .join('\n')
 
     const pickupLabel =
-      order.pickup_time === 'asap' ? '~12 min (ASAP)' : order.pickup_time
+      order.pickup_time === 'asap' ? '~15 min (ASAP)' : order.pickup_time
 
     const orderTime = new Date(order.created_at).toLocaleString('en-AU', {
       timeZone: 'Australia/Sydney',

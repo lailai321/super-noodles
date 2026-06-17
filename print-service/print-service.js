@@ -74,7 +74,7 @@ function buildReceipt(order) {
   p.push(txt('Order #' + String(order.order_number).padStart(4, '0')))
   p.push(CMD.boldOff(), CMD.dblHeight())
   p.push(txt('Time:   ' + sydneyTime(order.created_at)))
-  p.push(txt('Pickup: ' + (order.pickup_time === 'asap' ? 'ASAP (~12 min)' : order.pickup_time)))
+  p.push(txt('Pickup: ' + (order.pickup_time === 'asap' ? 'ASAP (~15 min)' : order.pickup_time)))
   p.push(CMD.normalSize())
   p.push(div('-'))
 

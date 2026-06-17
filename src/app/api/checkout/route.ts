@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
       },
       phone_number_collection: { enabled: false },
       custom_text: {
-        submit: { message: `Pickup only - ${pickupTime === 'asap' ? 'Ready in ~12 min' : pickupTime}` },
+        submit: { message: `Pickup only - ${pickupTime === 'asap' ? 'Ready in ~15 min' : pickupTime}` },
       },
     }, idempotencyKey ? { idempotencyKey } : undefined)
   } catch (error) {

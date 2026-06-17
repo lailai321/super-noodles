@@ -160,7 +160,7 @@ export default function CheckoutPage() {
             ) : (
               <>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button type="button" onClick={() => setPickupType('asap')} disabled={!storeOpen} style={pickupBtn(pickupType === 'asap', !storeOpen)}>ASAP (~12 min)</button>
+                  <button type="button" onClick={() => setPickupType('asap')} disabled={!storeOpen} style={pickupBtn(pickupType === 'asap', !storeOpen)}>ASAP (~15 min)</button>
                   <button type="button" onClick={() => setPickupType('schedule')} disabled={slots.length === 0} style={pickupBtn(pickupType === 'schedule', slots.length === 0)}>Schedule</button>
                 </div>
                 {pickupType === 'schedule' && slots.length > 0 && (

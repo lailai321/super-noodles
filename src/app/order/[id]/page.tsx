@@ -33,7 +33,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
     notFound()
   }
 
-  const pickupLabel = order.pickup_time === 'asap' ? '~12 minutes (ASAP)' : order.pickup_time
+  const pickupLabel = order.pickup_time === 'asap' ? '~15 minutes (ASAP)' : order.pickup_time
   const R = { fontFamily: "'Rackety DEMO', sans-serif" } as const
   const F = { fontFamily: "'BudgePair', sans-serif" } as const
   const status = {

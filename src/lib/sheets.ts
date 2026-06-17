@@ -85,7 +85,7 @@ export async function appendOrderToSheet(order: {
     `$${total.toFixed(2)}`,
     order.customer_name,
     order.customer_phone,
-    order.pickup_time === 'asap' ? '~12 min (ASAP)' : order.pickup_time,
+    order.pickup_time === 'asap' ? '~15 min (ASAP)' : order.pickup_time,
     order.status,
   ]
 
