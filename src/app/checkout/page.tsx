@@ -148,6 +148,7 @@ export default function CheckoutPage() {
           <div>
             <label style={labelS}>PHONE</label>
             <input className="input-dark" type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="04xx xxx xxx" required />
+            <p style={{ ...F, fontSize: '0.72rem', color: '#999', marginTop: 4 }}>We&apos;ll send you an SMS when your order is ready for pickup</p>
           </div>
           <div>
             <label style={labelS}>PICKUP TIME</label>
