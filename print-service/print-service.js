@@ -3,7 +3,7 @@ const net   = require('net')
 const https = require('https')
 
 // ─── Config ──────────────────────────────────────────────────────────────────
-const PRINT_SECRET   = 'xy9tlyWxJwl8lhSt65I77yKM'
+const PRINT_SECRET   = 'uDQlQ585FhAx9J2FJ1O37bRln8xtoawz'
 const API_HOST       = 'www.supernoodlesonline.com.au'
 const PRINTER_HOST   = '192.168.0.87'
 const PRINTER_PORT   = 9100
