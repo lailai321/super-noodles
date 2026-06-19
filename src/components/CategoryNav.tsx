@@ -31,9 +31,8 @@ export default function CategoryNav({ categories, activeSlug, onSelect }: Props)
             style={{
               whiteSpace: 'nowrap', padding: '10px 18px', borderRadius: 4,
               border: 'none',
-              background: active ? '#D9A815' : '#F3BD25',
-              borderLeft: active ? '4px solid #1A1A1A' : '4px solid transparent',
-              color: '#1A1A1A',
+              background: active ? '#1A1A1A' : '#F3BD25',
+              color: active ? '#F3BD25' : '#1A1A1A',
               fontFamily: "'Rackety DEMO', sans-serif",
               fontSize: '1.1rem', letterSpacing: '0.04em',
               cursor: 'pointer', transition: 'background 0.15s', flexShrink: 0,

@@ -292,8 +292,8 @@ body {
 }
 .hero-sep { opacity: 0.4; }
 
-.hero-info-item { display: inline-flex; align-items: center; gap: 6px; }
-.hero-info-icon { color: #F3BD25; flex-shrink: 0; }
+.hero-info-item { display: inline-flex; align-items: flex-start; gap: 6px; }
+.hero-info-icon { color: #F3BD25; flex-shrink: 0; margin-top: 2px; }
 
 .hero-mobile-overlay { display: none; }
 
