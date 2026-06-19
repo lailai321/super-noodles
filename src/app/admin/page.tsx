@@ -81,7 +81,6 @@ export default function AdminPage() {
   const [saving, setSaving] = useState<string | null>(null)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
-  const [soundEnabled, setSoundEnabled] = useState(false)
   const [pastDate, setPastDate] = useState('')
   const [pastOrders, setPastOrders] = useState<AdminOrder[] | null>(null)
   const [loadingPast, setLoadingPast] = useState(false)
@@ -102,14 +101,9 @@ export default function AdminPage() {
   )
 
   const unlockSound = useCallback(() => {
-    if (soundEnabled) {
-      setSoundEnabled(false)
-      return
-    }
     if (!audioRef.current) audioRef.current = new AudioContext()
     void audioRef.current.resume()
-    setSoundEnabled(true)
-  }, [soundEnabled])
+  }, [])
 
   const playAlert = useCallback(() => {
     const context = audioRef.current
@@ -220,11 +214,23 @@ export default function AdminPage() {
   }, [authed, loadHolidays, tab])
 
   useEffect(() => {
-    if (!unacknowledged.length || !soundEnabled) return
+    if (!unacknowledged.length) return
     playAlert()
     const alertTimer = window.setInterval(playAlert, 20000)
     return () => window.clearInterval(alertTimer)
-  }, [playAlert, soundEnabled, unacknowledged.length])
+  }, [playAlert, unacknowledged.length])
+
+  // Browsers block audio until a user gesture; this silently arms it on
+  // the first click/keypress so sound is "on by default" with no toggle.
+  useEffect(() => {
+    if (!authed) return
+    document.addEventListener('pointerdown', unlockSound, { once: true })
+    document.addEventListener('keydown', unlockSound, { once: true })
+    return () => {
+      document.removeEventListener('pointerdown', unlockSound)
+      document.removeEventListener('keydown', unlockSound)
+    }
+  }, [authed, unlockSound])
 
   useEffect(() => {
     const normalTitle = previousTitle.current
@@ -426,16 +432,6 @@ export default function AdminPage() {
             <p className="text-xs text-white opacity-70">Glenmore Park</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={unlockSound}
-              className={`min-h-9 px-4 rounded-lg text-xs font-bold shrink-0 transition-colors ${
-                soundEnabled
-                  ? 'bg-green-500 text-white hover:bg-green-600'
-                  : 'bg-[#FFC200] text-[#1A1A1A] hover:bg-yellow-300'
-              }`}
-            >
-              {soundEnabled ? 'Sound ON' : 'Enable Order Sound'}
-            </button>
             <Link
               href="/?admin=true"
               className="min-h-9 px-4 rounded-lg border border-gray-600 flex items-center gap-1.5 hover:bg-gray-800 text-xs font-bold shrink-0 transition-colors"
