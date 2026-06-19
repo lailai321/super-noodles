@@ -269,7 +269,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 0 28px 136px;
+  padding: 0 28px 40px;
   gap: 10px;
 }
 .hero-title {
@@ -292,30 +292,17 @@ body {
 }
 .hero-sep { opacity: 0.4; }
 
+.hero-info-item { display: inline-flex; align-items: center; gap: 6px; }
+.hero-info-icon { color: #F3BD25; flex-shrink: 0; }
+
 .hero-mobile-overlay { display: none; }
 
 .hero-coupons {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 1280px;
-  padding: 0 28px;
-  z-index: 2;
+  background: #FFFFFF;
+  border-bottom: 1px solid #EEEEEE;
+  padding: 18px 28px;
 }
-.hero-coupons .promo-scroll { padding: 0; }
-.hero-coupons .coupon-card {
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border-color: rgba(243,189,37,0.55);
-}
-.hero-coupons .coupon-card::before,
-.hero-coupons .coupon-card::after {
-  background: rgba(245,245,245,0.9);
-  border-color: rgba(243,189,37,0.45);
-}
+.hero-coupons .promo-scroll { max-width: 1280px; margin: 0 auto; padding: 0; }
 
 @media (max-width: 768px) {
   .hero-wrapper {
@@ -324,7 +311,7 @@ body {
   }
   .hero-title { font-size: 1.85rem; }
   .hero-content {
-    padding: 0 20px 108px;
+    padding: 0 20px 28px;
     gap: 8px;
   }
   .hero-info {
@@ -338,8 +325,7 @@ body {
   .hero-tags > span { font-size: 0.78rem !important; padding: 5px 10px !important; gap: 5px !important; }
   .hero-tags > span svg { width: 13px !important; height: 13px !important; }
   .hero-coupons {
-    padding: 0 16px;
-    bottom: 10px;
+    padding: 14px 16px;
   }
   .hero-coupons .coupon-card {
     flex: 0 0 67vw;

@@ -1,6 +1,6 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ShoppingBag, XCircle } from 'lucide-react'
+import { ShoppingBag, XCircle, MapPin, Clock, Phone } from 'lucide-react'
 import Image from 'next/image'
 
 import { MenuCategory, MenuItem } from '@/types'
@@ -137,11 +137,11 @@ export default function HomePage() {
         <div className="hero-content">
           <h1 className="hero-title">Super Noodles – Glenmore Park</h1>
           <div className="hero-info">
-            <span>📍 Kiosk 2 Glenmore Park Town Centre, 1/11 Town Terrace, Glenmore Park NSW 2745</span>
+            <span className="hero-info-item"><MapPin size={15} strokeWidth={2.2} className="hero-info-icon" />Kiosk 2 Glenmore Park Town Centre, 1/11 Town Terrace, Glenmore Park NSW 2745</span>
             <span className="hero-sep">·</span>
-            <span>🕙 Tue–Sun 11:00am – 8:00pm</span>
+            <span className="hero-info-item"><Clock size={15} strokeWidth={2.2} className="hero-info-icon" />Tue–Sun 11:00am – 8:00pm</span>
             <span className="hero-sep">·</span>
-            <span>📞 (02) 4733 4782</span>
+            <span className="hero-info-item"><Phone size={15} strokeWidth={2.2} className="hero-info-icon" />(02) 4733 4782</span>
           </div>
           <div className="hero-tags" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#F3BD25', color: '#1A1A1A', fontFamily: "'BudgePair', sans-serif", fontSize: '1rem', fontWeight: 700, padding: '7px 16px', borderRadius: 6, letterSpacing: '0.02em' }}>
@@ -154,11 +154,11 @@ export default function HomePage() {
             </span>
           </div>
         </div>
+      </div>
 
-        {/* Coupon cards */}
-        <div className="hero-coupons">
-          <PromoBanner />
-        </div>
+      {/* Coupon cards — below the hero photo, never overlapping it */}
+      <div className="hero-coupons">
+        <PromoBanner />
       </div>
 
       {/* Mobile sticky category nav — full width, outside padded container */}
