@@ -431,7 +431,7 @@ export default function AdminPage() {
               }`}
             >
               {audioUnlocked ? <Check size={14} strokeWidth={3} /> : null}
-              {audioUnlocked ? 'Accepting Orders' : 'Start Accepting Orders 开始接单'}
+              {audioUnlocked ? 'Accepting Orders' : 'Start Accepting Orders 点击开始接单'}
             </button>
             <Link
               href="/?admin=true"
