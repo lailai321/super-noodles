@@ -81,6 +81,7 @@ export default function AdminPage() {
   const [saving, setSaving] = useState<string | null>(null)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [audioUnlocked, setAudioUnlocked] = useState(false)
   const [pastDate, setPastDate] = useState('')
   const [pastOrders, setPastOrders] = useState<AdminOrder[] | null>(null)
   const [loadingPast, setLoadingPast] = useState(false)
@@ -103,6 +104,7 @@ export default function AdminPage() {
   const unlockSound = useCallback(() => {
     if (!audioRef.current) audioRef.current = new AudioContext()
     void audioRef.current.resume()
+    setAudioUnlocked(true)
   }, [])
 
   const playAlert = useCallback(() => {
@@ -220,18 +222,6 @@ export default function AdminPage() {
     return () => window.clearInterval(alertTimer)
   }, [playAlert, unacknowledged.length])
 
-  // Browsers block audio until a user gesture; this silently arms it on
-  // the first click/keypress so sound is "on by default" with no toggle.
-  useEffect(() => {
-    if (!authed) return
-    document.addEventListener('pointerdown', unlockSound, { once: true })
-    document.addEventListener('keydown', unlockSound, { once: true })
-    return () => {
-      document.removeEventListener('pointerdown', unlockSound)
-      document.removeEventListener('keydown', unlockSound)
-    }
-  }, [authed, unlockSound])
-
   useEffect(() => {
     const normalTitle = previousTitle.current
     if (!unacknowledged.length) {
@@ -253,7 +243,6 @@ export default function AdminPage() {
 
   async function handleLogin(event: React.FormEvent) {
     event.preventDefault()
-    unlockSound()
     setAuthError('')
     try {
       const res = await fetchWithTimeout('/api/admin/auth', {
@@ -432,6 +421,14 @@ export default function AdminPage() {
             <p className="text-xs text-white opacity-70">Glenmore Park</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            {!audioUnlocked && (
+              <button
+                onClick={unlockSound}
+                className="min-h-9 px-4 rounded-lg bg-[#FFC200] text-[#1A1A1A] text-xs font-black hover:bg-yellow-300 transition-colors shrink-0"
+              >
+                开始接单
+              </button>
+            )}
             <Link
               href="/?admin=true"
               className="min-h-9 px-4 rounded-lg border border-gray-600 flex items-center gap-1.5 hover:bg-gray-800 text-xs font-bold shrink-0 transition-colors"
