@@ -421,14 +421,18 @@ export default function AdminPage() {
             <p className="text-xs text-white opacity-70">Glenmore Park</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            {!audioUnlocked && (
-              <button
-                onClick={unlockSound}
-                className="min-h-9 px-4 rounded-lg bg-[#FFC200] text-[#1A1A1A] text-xs font-black hover:bg-yellow-300 transition-colors shrink-0"
-              >
-                Start Accepting Orders 开始接单
-              </button>
-            )}
+            <button
+              onClick={unlockSound}
+              disabled={audioUnlocked}
+              className={`min-h-9 px-4 rounded-lg text-xs font-black transition-colors shrink-0 flex items-center gap-1.5 ${
+                audioUnlocked
+                  ? 'bg-green-500 text-white disabled:cursor-default'
+                  : 'bg-[#FFC200] text-[#1A1A1A] hover:bg-yellow-300'
+              }`}
+            >
+              {audioUnlocked ? <Check size={14} strokeWidth={3} /> : null}
+              {audioUnlocked ? 'Accepting Orders' : 'Start Accepting Orders 开始接单'}
+            </button>
             <Link
               href="/?admin=true"
               className="min-h-9 px-4 rounded-lg border border-gray-600 flex items-center gap-1.5 hover:bg-gray-800 text-xs font-bold shrink-0 transition-colors"
