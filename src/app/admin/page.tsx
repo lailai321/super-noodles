@@ -426,7 +426,7 @@ export default function AdminPage() {
                 onClick={unlockSound}
                 className="min-h-9 px-4 rounded-lg bg-[#FFC200] text-[#1A1A1A] text-xs font-black hover:bg-yellow-300 transition-colors shrink-0"
               >
-                开始接单
+                Start Accepting Orders 开始接单
               </button>
             )}
             <Link
