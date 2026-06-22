@@ -245,14 +245,20 @@ async function poll() {
   }
 }
 
-// ─── Start ────────────────────────────────────────────────────────────────────
-console.log('╔══════════════════════════════════════════╗')
-console.log('║   Super Noodles — Auto Print Service     ║')
-console.log('╚══════════════════════════════════════════╝')
-console.log('API:     https://' + API_HOST)
-console.log('Printer: ' + PRINTER_HOST + ':' + PRINTER_PORT)
-console.log('Polling: every ' + (POLL_MS / 1000) + 's')
-console.log('')
+module.exports = { buildReceipt, sendToPrinter }
 
-poll()
-setInterval(poll, POLL_MS)
+// ─── Start ────────────────────────────────────────────────────────────────────
+// Only auto-run the live poll loop when launched directly (e.g. via start.bat),
+// not when required by a test script like test-print.js.
+if (require.main === module) {
+  console.log('╔══════════════════════════════════════════╗')
+  console.log('║   Super Noodles — Auto Print Service     ║')
+  console.log('╚══════════════════════════════════════════╝')
+  console.log('API:     https://' + API_HOST)
+  console.log('Printer: ' + PRINTER_HOST + ':' + PRINTER_PORT)
+  console.log('Polling: every ' + (POLL_MS / 1000) + 's')
+  console.log('')
+
+  poll()
+  setInterval(poll, POLL_MS)
+}
