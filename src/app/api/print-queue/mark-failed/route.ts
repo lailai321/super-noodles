@@ -9,18 +9,16 @@ function authorized(req: NextRequest) {
 export async function POST(req: NextRequest) {
   if (!authorized(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json().catch(() => ({})) as { orderId?: unknown }
-  const { orderId } = body
+  const body = await req.json().catch(() => ({})) as { orderId?: unknown; error?: unknown }
+  const { orderId, error: printError } = body
   if (!orderId || typeof orderId !== 'string' || !/^[0-9a-f-]{36}$/i.test(orderId)) {
     return NextResponse.json({ error: 'Invalid orderId' }, { status: 400 })
   }
 
   const db = getServiceClient()
   const { error } = await db.from('orders').update({
-    printed: true,
-    print_status: 'printed',
-    printed_at: new Date().toISOString(),
-    print_error: null,
+    print_status: 'failed',
+    print_error: typeof printError === 'string' ? printError.slice(0, 500) : 'Unknown error',
   }).eq('id', orderId)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })

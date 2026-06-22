@@ -9,6 +9,7 @@ import { getOrderGifts } from '@/lib/giftRules'
 type Tab = 'orders' | 'menu' | 'holidays'
 type OrderStatus = 'confirmed' | 'ready' | 'collected'
 type SmsStatus = 'not_sent' | 'sending' | 'sent' | 'failed'
+type PrintStatus = 'pending' | 'printed' | 'failed'
 
 interface AdminOrderItem {
   id: string
@@ -35,8 +36,13 @@ interface AdminOrder {
   sms_status: SmsStatus
   sms_sent_at: string | null
   sms_error: string | null
+  print_status: PrintStatus
+  printed_at: string | null
+  print_error: string | null
   order_items: AdminOrderItem[]
 }
+
+const PRINT_ALERT_MINUTES = 5
 
 interface MenuData {
   categories: MenuCategory[]
@@ -99,6 +105,18 @@ export default function AdminPage() {
   const unacknowledged = useMemo(
     () => activeOrders.filter(order => !order.acknowledged_at),
     [activeOrders]
+  )
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const tick = window.setInterval(() => setNow(Date.now()), 10_000)
+    return () => window.clearInterval(tick)
+  }, [])
+  const printIssues = useMemo(
+    () => activeOrders.filter(order =>
+      order.print_status !== 'printed' &&
+      now - new Date(order.created_at).getTime() > PRINT_ALERT_MINUTES * 60_000
+    ),
+    [activeOrders, now]
   )
   // Identifies *which* orders are unacknowledged, not just how many — so the
   // alert still fires if one order is acknowledged and a new one arrives in
@@ -299,7 +317,7 @@ export default function AdminPage() {
     setMenuData(null)
   }
 
-  async function runOrderAction(order: AdminOrder, action: 'acknowledge' | 'ready' | 'collected' | 'retry_sms') {
+  async function runOrderAction(order: AdminOrder, action: 'acknowledge' | 'ready' | 'collected' | 'retry_sms' | 'reprint') {
     if (action === 'ready' && !window.confirm(
       `Mark order #${String(order.order_number).padStart(4, '0')} as ready and notify the customer?`
     )) return
@@ -322,6 +340,7 @@ export default function AdminPage() {
         ready: 'Order marked ready',
         collected: 'Order marked collected',
         retry_sms: data.sms?.sent ? 'SMS sent' : 'SMS was not sent',
+        reprint: 'Reprint requested',
       }
       setMessage(labels[action])
       window.setTimeout(() => setMessage(''), 3000)
@@ -513,6 +532,16 @@ export default function AdminPage() {
               The order database migration must be applied before Orders can be used.
             </div>
           )}
+          {printIssues.length > 0 && (
+            <div className="bg-red-50 border-2 border-red-400 text-red-900 rounded-xl px-4 py-3 mb-4 text-sm">
+              <p className="font-black">
+                PRINTER NOT RESPONDING — Order{printIssues.length > 1 ? 's' : ''}{' '}
+                {printIssues.map(o => '#' + String(o.order_number).padStart(4, '0')).join(', ')}{' '}
+                {printIssues.length > 1 ? "haven't" : "hasn't"} printed in over {PRINT_ALERT_MINUTES} minutes.
+              </p>
+              <p className="mt-1">Please check the print tablet — it likely needs restarting.</p>
+            </div>
+          )}
           {!smsConfigured && tab === 'orders' && (
             <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl px-4 py-3 mb-4 text-sm">
               <strong>SMS not configured.</strong> Ready orders will show SMS Failed until ClickSend credentials are added.
@@ -670,7 +699,7 @@ function OrderCard({
 }: {
   order: AdminOrder
   saving: string | null
-  onAction: (order: AdminOrder, action: 'acknowledge' | 'ready' | 'collected' | 'retry_sms') => void
+  onAction: (order: AdminOrder, action: 'acknowledge' | 'ready' | 'collected' | 'retry_sms' | 'reprint') => void
   readOnly?: boolean
 }) {
   const gifts = getOrderGifts(order.total_cents)
@@ -762,6 +791,21 @@ function OrderCard({
               className={`${actionClass} bg-green-600 text-white hover:bg-green-700`}
             >
               MARK READY
+            </button>
+          )}
+          {!readOnly && order.print_status === 'failed' && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-xs font-black text-red-700">PRINT FAILED</p>
+              {order.print_error && <p className="text-xs text-red-600 mt-1 break-words">{order.print_error}</p>}
+            </div>
+          )}
+          {!readOnly && (
+            <button
+              onClick={() => onAction(order, 'reprint')}
+              disabled={saving === `${order.id}:reprint`}
+              className={`${actionClass} bg-white border border-gray-300 text-gray-700 hover:border-gray-400`}
+            >
+              REPRINT
             </button>
           )}
         </div>

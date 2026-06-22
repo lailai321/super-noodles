@@ -4,7 +4,7 @@ import { getServiceClient } from '@/lib/supabase'
 import { sendReadySms } from '@/lib/sms'
 import { hasTrustedOrigin, readJson } from '@/lib/security'
 
-type Action = 'acknowledge' | 'ready' | 'collected' | 'retry_sms'
+type Action = 'acknowledge' | 'ready' | 'collected' | 'retry_sms' | 'reprint'
 
 function sydneyDate(value: string | Date) {
   return new Intl.DateTimeFormat('en-CA', {
@@ -48,7 +48,7 @@ async function sendSmsForOrder(orderId: string) {
   }
 }
 
-const ORDER_SELECT = 'id, order_number, customer_name, customer_phone, total_cents, pickup_time, status, created_at, acknowledged_at, ready_at, collected_at, sms_status, sms_sent_at, sms_error, order_items(id, item_name, quantity, unit_price_cents, extra_meat, extra_vegetable, notes)'
+const ORDER_SELECT = 'id, order_number, customer_name, customer_phone, total_cents, pickup_time, status, created_at, acknowledged_at, ready_at, collected_at, sms_status, sms_sent_at, sms_error, print_status, printed_at, print_error, order_items(id, item_name, quantity, unit_price_cents, extra_meat, extra_vegetable, notes)'
 
 export async function GET(req: NextRequest) {
   if (!isAdminRequest(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
     .order('created_at', { ascending: false })
 
   if (error) {
-    const migrationNeeded = error.message.includes('acknowledged_at') || error.message.includes('sms_status')
+    const migrationNeeded = error.message.includes('acknowledged_at') || error.message.includes('sms_status') || error.message.includes('print_status')
     return NextResponse.json({
       error: migrationNeeded ? 'Order database migration is required' : error.message,
       migrationNeeded,
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
 
   const { orderId, action } = await readJson<{ orderId?: string; action?: Action }>(req, 2048)
   if (!orderId || !action) return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
-  if (!/^[0-9a-f-]{36}$/i.test(orderId) || !['acknowledge', 'ready', 'collected', 'retry_sms'].includes(action)) {
+  if (!/^[0-9a-f-]{36}$/i.test(orderId) || !['acknowledge', 'ready', 'collected', 'retry_sms', 'reprint'].includes(action)) {
     return NextResponse.json({ error: 'Invalid fields' }, { status: 400 })
   }
 
@@ -164,6 +164,14 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     if (!updated) return NextResponse.json({ error: 'Order is not ready' }, { status: 409 })
+    return NextResponse.json({ ok: true })
+  }
+
+  if (action === 'reprint') {
+    const { error } = await db.from('orders')
+      .update({ printed: false, print_status: 'pending', print_error: null })
+      .eq('id', orderId)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true })
   }
 

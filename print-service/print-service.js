@@ -230,6 +230,11 @@ async function poll() {
       console.log('[print]', tag, '→ printer OK')
     } catch (err) {
       console.error('[print]', tag, 'FAILED:', err.message, '— will retry next poll')
+      try {
+        await apiRequest('POST', '/api/print-queue/mark-failed', { orderId: order.id, error: err.message })
+      } catch (reportErr) {
+        console.error('[mark-failed]', tag, reportErr.message)
+      }
       continue
     }
 
