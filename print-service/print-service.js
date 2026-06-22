@@ -218,8 +218,6 @@ async function poll() {
     return
   }
 
-  console.log('[poll] API response:', JSON.stringify(result.body, null, 2))
-
   const orders = result.body.orders || []
   if (orders.length === 0) return
 
