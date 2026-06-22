@@ -100,6 +100,13 @@ export default function AdminPage() {
     () => activeOrders.filter(order => !order.acknowledged_at),
     [activeOrders]
   )
+  // Identifies *which* orders are unacknowledged, not just how many — so the
+  // alert still fires if one order is acknowledged and a new one arrives in
+  // the same refresh (count stays the same, but it's a different order).
+  const unacknowledgedKey = useMemo(
+    () => unacknowledged.map(order => order.id).join(','),
+    [unacknowledged]
+  )
 
   const unlockSound = useCallback(() => {
     if (!audioRef.current) audioRef.current = new AudioContext()
@@ -109,20 +116,38 @@ export default function AdminPage() {
 
   const playAlert = useCallback(() => {
     const context = audioRef.current
-    if (!context || context.state !== 'running') return
-    const now = context.currentTime
-    ;[659.25, 783.99, 987.77].forEach((frequency, index) => {
-      const oscillator = context.createOscillator()
-      const gain = context.createGain()
-      oscillator.type = 'sine'
-      oscillator.frequency.value = frequency
-      gain.gain.setValueAtTime(0.0001, now + index * 0.2)
-      gain.gain.exponentialRampToValueAtTime(0.18, now + index * 0.2 + 0.02)
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.2 + 0.16)
-      oscillator.connect(gain).connect(context.destination)
-      oscillator.start(now + index * 0.2)
-      oscillator.stop(now + index * 0.2 + 0.18)
-    })
+    if (!context) return
+
+    const schedule = () => {
+      const now = context.currentTime
+      // Ascending 3-note chime (G5, B5, D6), played twice — noticeable but not alarming.
+      const notes = [784, 987.77, 1174.66]
+      const duration = 0.45
+      for (let round = 0; round < 2; round++) {
+        notes.forEach((frequency, index) => {
+          const start = now + round * 1.1 + index * 0.16
+          const oscillator = context.createOscillator()
+          const gain = context.createGain()
+          oscillator.type = 'sine'
+          oscillator.frequency.value = frequency
+          gain.gain.setValueAtTime(0.0001, start)
+          gain.gain.exponentialRampToValueAtTime(0.22, start + duration * 0.12)
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + duration)
+          oscillator.connect(gain).connect(context.destination)
+          oscillator.start(start)
+          oscillator.stop(start + duration + 0.05)
+        })
+      }
+    }
+
+    // Chrome auto-suspends idle AudioContexts to save power; if that happened
+    // since the last alert, resume it before scheduling the next one — otherwise
+    // the sound silently fails to play.
+    if (context.state !== 'running') {
+      void context.resume().then(schedule)
+    } else {
+      schedule()
+    }
   }, [])
 
   const loadOrders = useCallback(async (quiet = false) => {
@@ -220,7 +245,7 @@ export default function AdminPage() {
     playAlert()
     const alertTimer = window.setInterval(playAlert, 20000)
     return () => window.clearInterval(alertTimer)
-  }, [playAlert, unacknowledged.length])
+  }, [playAlert, unacknowledged.length, unacknowledgedKey])
 
   useEffect(() => {
     const normalTitle = previousTitle.current
