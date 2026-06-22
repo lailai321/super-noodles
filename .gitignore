@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# print service runtime log
+print-service/print-service.log
