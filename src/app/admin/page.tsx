@@ -111,9 +111,13 @@ export default function AdminPage() {
     const tick = window.setInterval(() => setNow(Date.now()), 10_000)
     return () => window.clearInterval(tick)
   }, [])
+  // Excludes orders that have printed_at set from a previous successful print —
+  // those are mid-reprint (staff hit REPRINT), not genuinely stuck, so they
+  // shouldn't trip the "printer not responding" alert.
   const printIssues = useMemo(
     () => activeOrders.filter(order =>
       order.print_status !== 'printed' &&
+      !order.printed_at &&
       now - new Date(order.created_at).getTime() > PRINT_ALERT_MINUTES * 60_000
     ),
     [activeOrders, now]
