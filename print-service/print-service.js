@@ -5,7 +5,10 @@ const fs    = require('fs')
 const path  = require('path')
 
 // ─── Config ──────────────────────────────────────────────────────────────────
-const PRINT_SECRET   = 'uDQlQ585FhAx9J2FJ1O37bRln8xtoawz'
+// PRINT_SECRET comes from the environment (set on the Windows service via
+// nssm set ... AppEnvironmentExtra) — never hardcode it here, this file is
+// pushed to a public GitHub repo.
+const PRINT_SECRET   = process.env.PRINT_SECRET
 const API_HOST       = 'www.supernoodlesonline.com.au'
 const PRINTER_HOST   = '192.168.0.87'
 const PRINTER_PORT   = 9100
@@ -272,6 +275,10 @@ module.exports = { buildReceipt, sendToPrinter }
 // Only auto-run the live poll loop when launched directly (e.g. via start.bat),
 // not when required by a test script like test-print.js.
 if (require.main === module) {
+  if (!PRINT_SECRET) {
+    logErr('PRINT_SECRET environment variable is not set — refusing to start.')
+    process.exit(1)
+  }
   log('╔══════════════════════════════════════════╗')
   log('║   Super Noodles — Auto Print Service     ║')
   log('╚══════════════════════════════════════════╝')
