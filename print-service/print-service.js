@@ -1,6 +1,8 @@
 'use strict'
 const net   = require('net')
 const https = require('https')
+const fs    = require('fs')
+const path  = require('path')
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 const PRINT_SECRET   = 'uDQlQ585FhAx9J2FJ1O37bRln8xtoawz'
@@ -10,6 +12,21 @@ const PRINTER_PORT   = 9100
 const POLL_MS        = 5000
 const LINE_CHARS     = 48          // 80mm paper, Font A (48 chars/line)
 const PRINTER_TIMEOUT_MS = 10000
+const API_TIMEOUT_MS = 15000
+const LOG_FILE = path.join(__dirname, 'print-service.log')
+
+// console output is fully-buffered when NSSM redirects it to a file, so logs
+// can sit unflushed for a long time — write to LOG_FILE directly instead.
+function log(...args) {
+  const line = '[' + new Date().toISOString() + '] ' + args.join(' ')
+  console.log(line)
+  try { fs.appendFileSync(LOG_FILE, line + '\n') } catch {}
+}
+function logErr(...args) {
+  const line = '[' + new Date().toISOString() + '] ' + args.join(' ')
+  console.error(line)
+  try { fs.appendFileSync(LOG_FILE, line + '\n') } catch {}
+}
 
 // ─── ESC/POS commands ────────────────────────────────────────────────────────
 const ESC = 0x1B
@@ -193,6 +210,7 @@ function apiRequest(method, path, body) {
         catch { resolve({ status: res.statusCode, body: raw }) }
       })
     })
+    req.setTimeout(API_TIMEOUT_MS, () => req.destroy(new Error('API request timeout')))
     req.on('error', reject)
     if (payload) req.write(payload)
     req.end()
@@ -205,45 +223,45 @@ async function poll() {
   try {
     result = await apiRequest('GET', '/api/print-queue', null)
   } catch (err) {
-    console.error('[poll] Network error:', err.message)
+    logErr('[poll] Network error:', err.message)
     return
   }
 
   if (result.status === 401) {
-    console.error('[poll] PRINT_SECRET rejected — check config and restart')
+    logErr('[poll] PRINT_SECRET rejected — check config and restart')
     return
   }
   if (result.status !== 200) {
-    console.error('[poll] API error:', result.status, result.body)
+    logErr('[poll] API error:', result.status, result.body)
     return
   }
 
   const orders = result.body.orders || []
   if (orders.length === 0) return
 
-  console.log('[poll]', orders.length, 'order(s) to print')
+  log('[poll]', orders.length, 'order(s) to print')
 
   for (const order of orders) {
     const tag = '#' + String(order.order_number).padStart(4, '0')
     try {
       await sendToPrinter(buildReceipt(order))
-      console.log('[print]', tag, '→ printer OK')
+      log('[print]', tag, '→ printer OK')
     } catch (err) {
-      console.error('[print]', tag, 'FAILED:', err.message, '— will retry next poll')
+      logErr('[print]', tag, 'FAILED:', err.message, '— will retry next poll')
       try {
         await apiRequest('POST', '/api/print-queue/mark-failed', { orderId: order.id, error: err.message })
       } catch (reportErr) {
-        console.error('[mark-failed]', tag, reportErr.message)
+        logErr('[mark-failed]', tag, reportErr.message)
       }
       continue
     }
 
     try {
       await apiRequest('POST', '/api/print-queue/mark-printed', { orderId: order.id })
-      console.log('[done]', tag, 'marked printed')
+      log('[done]', tag, 'marked printed')
     } catch (err) {
       // Non-critical — order will re-print next poll if this fails
-      console.error('[mark-printed]', tag, err.message)
+      logErr('[mark-printed]', tag, err.message)
     }
   }
 }
@@ -254,13 +272,13 @@ module.exports = { buildReceipt, sendToPrinter }
 // Only auto-run the live poll loop when launched directly (e.g. via start.bat),
 // not when required by a test script like test-print.js.
 if (require.main === module) {
-  console.log('╔══════════════════════════════════════════╗')
-  console.log('║   Super Noodles — Auto Print Service     ║')
-  console.log('╚══════════════════════════════════════════╝')
-  console.log('API:     https://' + API_HOST)
-  console.log('Printer: ' + PRINTER_HOST + ':' + PRINTER_PORT)
-  console.log('Polling: every ' + (POLL_MS / 1000) + 's')
-  console.log('')
+  log('╔══════════════════════════════════════════╗')
+  log('║   Super Noodles — Auto Print Service     ║')
+  log('╚══════════════════════════════════════════╝')
+  log('API:     https://' + API_HOST)
+  log('Printer: ' + PRINTER_HOST + ':' + PRINTER_PORT)
+  log('Polling: every ' + (POLL_MS / 1000) + 's')
+  log('')
 
   poll()
   setInterval(poll, POLL_MS)
