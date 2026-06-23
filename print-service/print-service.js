@@ -10,7 +10,11 @@ const path  = require('path')
 // pushed to a public GitHub repo.
 const PRINT_SECRET   = process.env.PRINT_SECRET
 const API_HOST       = 'www.supernoodlesonline.com.au'
-const PRINTER_HOST   = '192.168.0.87'
+// The printer's LAN IP changes whenever it joins a different WiFi network
+// (e.g. moving from home testing to the shop) — override via the
+// PRINTER_HOST env var (same AppEnvironmentExtra mechanism as PRINT_SECRET)
+// instead of editing this file each time.
+const PRINTER_HOST   = process.env.PRINTER_HOST || '192.168.0.87'
 const PRINTER_PORT   = 9100
 const POLL_MS        = 5000
 const LINE_CHARS     = 48          // 80mm paper, Font A (48 chars/line)
