@@ -452,9 +452,16 @@ export default function AdminPage() {
               <p className="text-xs text-gray-400">{newestAlert.customer_name} · {pickupLabel(newestAlert.pickup_time)}</p>
             </div>
             <button
+              onClick={() => runOrderAction(newestAlert, 'acknowledge')}
+              disabled={saving === `${newestAlert.id}:acknowledge`}
+              className="min-h-8 px-4 rounded-lg bg-[#FFC200] text-[#1A1A1A] text-xs font-black hover:bg-yellow-300 transition-colors shrink-0"
+            >
+              CONFIRM
+            </button>
+            <button
               onClick={() => runOrderAction(newestAlert, 'ready')}
               disabled={saving === `${newestAlert.id}:ready`}
-              className="min-h-8 px-4 rounded-lg bg-[#FFC200] text-[#1A1A1A] text-xs font-black hover:bg-yellow-300 transition-colors shrink-0"
+              className="min-h-8 px-4 rounded-lg bg-white/10 text-white text-xs font-bold hover:bg-white/20 transition-colors shrink-0"
             >
               MARK READY
             </button>
@@ -787,6 +794,15 @@ function OrderCard({
                 RETRY SMS
               </button>
             </div>
+          )}
+          {!readOnly && isNew && (
+            <button
+              onClick={() => onAction(order, 'acknowledge')}
+              disabled={saving === `${order.id}:acknowledge`}
+              className={`${actionClass} bg-[#FFC200] text-[#1A1A1A] hover:bg-yellow-300`}
+            >
+              CONFIRM (Stop Sound)
+            </button>
           )}
           {!readOnly && order.status === 'confirmed' && (
             <button
