@@ -203,6 +203,7 @@ function apiRequest(method, path, body) {
       port: 443,
       path,
       method,
+      signal: AbortSignal.timeout(API_TIMEOUT_MS),
       headers: {
         'x-print-secret': PRINT_SECRET,
         'Content-Type': 'application/json',
@@ -217,7 +218,6 @@ function apiRequest(method, path, body) {
         catch { resolve({ status: res.statusCode, body: raw }) }
       })
     })
-    req.setTimeout(API_TIMEOUT_MS, () => req.destroy(new Error('API request timeout')))
     req.on('error', reject)
     if (payload) req.write(payload)
     req.end()
