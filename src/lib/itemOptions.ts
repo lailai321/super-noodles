@@ -64,8 +64,7 @@ const RICE_BOWL_OPTIONS: OptionGroup[] = [
     multiSelect: false,
     choices: [
       { label: 'Boiled Rice', priceCents: 0 },
-      { label: 'Fried Rice', priceCents: 0 },
-      { label: 'Ham Fried Rice', priceCents: 200 },
+      { label: 'Fried Rice', priceCents: 200 },
     ],
   },
 ]
