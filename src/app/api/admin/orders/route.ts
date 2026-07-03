@@ -139,7 +139,8 @@ export async function POST(req: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     if (!updated) return NextResponse.json({ error: 'Order is no longer confirmed' }, { status: 409 })
 
-    const sms = await sendSmsForOrder(orderId)
+    const smsConfigured = Boolean(process.env.CLICKSEND_USERNAME && process.env.CLICKSEND_API_KEY)
+    const sms = smsConfigured ? await sendSmsForOrder(orderId) : { sent: false, skipped: true }
     return NextResponse.json({ ok: true, sms })
   }
 

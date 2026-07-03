@@ -585,7 +585,7 @@ export default function AdminPage() {
 
               <div className="admin-order-grid">
                 {activeOrders.map(order => (
-                  <OrderCard key={order.id} order={order} saving={saving} onAction={runOrderAction} />
+                  <OrderCard key={order.id} order={order} saving={saving} onAction={runOrderAction} smsConfigured={smsConfigured} />
                 ))}
               </div>
 
@@ -707,11 +707,13 @@ function OrderCard({
   saving,
   onAction,
   readOnly = false,
+  smsConfigured = true,
 }: {
   order: AdminOrder
   saving: string | null
   onAction: (order: AdminOrder, action: 'acknowledge' | 'ready' | 'collected' | 'retry_sms' | 'reprint') => void
   readOnly?: boolean
+  smsConfigured?: boolean
 }) {
   const gifts = getOrderGifts(order.total_cents)
   const isNew = !readOnly && !order.acknowledged_at
@@ -782,7 +784,7 @@ function OrderCard({
           {order.sms_status === 'sending' && (
             <p className="text-xs font-bold text-amber-600">Sending SMS...</p>
           )}
-          {!readOnly && order.sms_status === 'failed' && (
+          {!readOnly && smsConfigured && order.sms_status === 'failed' && (
             <div className="admin-sms-error bg-red-50 border border-red-200 rounded-lg p-3">
               <p className="text-xs font-black text-red-700">SMS FAILED</p>
               <p className="text-xs text-red-600 mt-1 break-words">{order.sms_error}</p>
