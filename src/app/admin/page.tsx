@@ -153,7 +153,7 @@ export default function AdminPage() {
           oscillator.type = 'sine'
           oscillator.frequency.value = frequency
           gain.gain.setValueAtTime(0.0001, start)
-          gain.gain.exponentialRampToValueAtTime(0.22, start + duration * 0.12)
+          gain.gain.exponentialRampToValueAtTime(0.9, start + duration * 0.12)
           gain.gain.exponentialRampToValueAtTime(0.0001, start + duration)
           oscillator.connect(gain).connect(context.destination)
           oscillator.start(start)
