@@ -83,4 +83,9 @@ export const ITEM_OPTIONS: Record<string, OptionGroup[]> = {
   '482aa29a-ad4b-43c8-9e98-e5a35dc7bc2c': RICE_BOWL_OPTIONS, // Garlic King Prawns Bowl
   'a3ca3264-5302-4b8e-a0b2-ce28728b51ab': RICE_BOWL_OPTIONS, // Special Chilli Beef Bowl
   '5f961487-9e05-42c0-a9bc-c8e26d0a00cc': RICE_BOWL_OPTIONS, // Chicken Stir Fry Bowl
+  '11111111-aaaa-4bbb-8ccc-000000000008': RICE_BOWL_OPTIONS, // Braised Beef Brisket Bowl
+  '11111111-aaaa-4bbb-8ccc-000000000009': RICE_BOWL_OPTIONS, // Beef Black Bean Bowl
+  '11111111-aaaa-4bbb-8ccc-000000000010': RICE_BOWL_OPTIONS, // Garlic Pepper Beef Bowl
+  '11111111-aaaa-4bbb-8ccc-000000000011': RICE_BOWL_OPTIONS, // Curry King Prawn Rice Bowl
+  '11111111-aaaa-4bbb-8ccc-000000000012': RICE_BOWL_OPTIONS, // Mix Vegetable & Tofu Bowl
 }
