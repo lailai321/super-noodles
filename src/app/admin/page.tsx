@@ -553,12 +553,6 @@ export default function AdminPage() {
               <p className="mt-1">Please check the print tablet — it likely needs restarting.</p>
             </div>
           )}
-          {!smsConfigured && tab === 'orders' && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl px-4 py-3 mb-4 text-sm">
-              <strong>SMS not configured.</strong> Ready orders will show SMS Failed until ClickSend credentials are added.
-            </div>
-          )}
-
           {tab === 'orders' ? (
             <>
               {/* ── Active Orders ── */}
