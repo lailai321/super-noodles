@@ -159,7 +159,7 @@ export default function CheckoutPage() {
             ) : (
               <>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button type="button" onClick={() => setPickupType('asap')} disabled={!storeOpen} style={pickupBtn(pickupType === 'asap', !storeOpen)}>ASAP (~15 min)</button>
+                  <button type="button" onClick={() => setPickupType('asap')} disabled={!storeOpen} style={pickupBtn(pickupType === 'asap', !storeOpen)}>ASAP (~25 min)</button>
                   <button type="button" onClick={() => setPickupType('schedule')} disabled={slots.length === 0} style={pickupBtn(pickupType === 'schedule', slots.length === 0)}>Schedule</button>
                 </div>
                 {pickupType === 'schedule' && slots.length > 0 && (
@@ -168,6 +168,9 @@ export default function CheckoutPage() {
                     {slots.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 )}
+                <p style={{ ...F, fontSize: '0.72rem', color: '#999', marginTop: 6 }}>
+                  During peak hours, wait times may be slightly longer.<br />Thank you for your patience!
+                </p>
               </>
             )}
           </div>

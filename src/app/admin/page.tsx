@@ -61,7 +61,7 @@ function formatOrderTime(value: string) {
 }
 
 function pickupLabel(value: string) {
-  return value === 'asap' ? 'ASAP (~15 min)' : value
+  return value === 'asap' ? 'ASAP (~25 min)' : value
 }
 
 async function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit, timeoutMs = 8000) {
