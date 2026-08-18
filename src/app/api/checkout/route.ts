@@ -17,6 +17,10 @@ type CheckoutInput = {
   idempotencyKey?: string
 }
 
+function sydneyToday() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Australia/Sydney' }).format(new Date())
+}
+
 function validPickupTime(value: string) {
   const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Australia/Sydney' }))
   if (now.getDay() === 1) return false
@@ -65,6 +69,19 @@ export async function POST(req: NextRequest) {
   }
 
   const db = getServiceClient()
+
+  const { data: holiday, error: holidayError } = await db
+    .from('holidays')
+    .select('date')
+    .eq('date', sydneyToday())
+    .maybeSingle()
+  if (holidayError) {
+    return NextResponse.json({ error: 'Could not verify store hours. Please try again.' }, { status: 503 })
+  }
+  if (holiday) {
+    return NextResponse.json({ error: "We're closed today. See you soon!" }, { status: 400 })
+  }
+
   if (idempotencyKey) {
     const { data: duplicate } = await db
       .from('orders')

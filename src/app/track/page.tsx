@@ -23,6 +23,7 @@ const STATUS = {
 
 function resolveStatus(order: OrderSummary) {
   const ageHours = (Date.now() - new Date(order.created_at).getTime()) / 3_600_000
+  if (order.status === 'collected') return STATUS.completed
   if (ageHours > 6) return STATUS.completed
   if (order.status === 'ready') return STATUS.ready
   return STATUS.confirmed
